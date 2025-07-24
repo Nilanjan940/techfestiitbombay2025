@@ -274,6 +274,117 @@
         </div>
     </main>
     
-    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    // Testimonial slider
+    const testimonials = document.querySelectorAll('.testimonial');
+    const dots = document.querySelectorAll('.dot');
+    let currentTestimonial = 0;
+    
+    function showTestimonial(index) {
+        testimonials.forEach(testimonial => {
+            testimonial.classList.remove('active');
+        });
+        
+        dots.forEach(dot => {
+            dot.classList.remove('active');
+        });
+        
+        testimonials[index].classList.add('active');
+        dots[index].classList.add('active');
+        currentTestimonial = index;
+    }
+    
+    dots.forEach(dot => {
+        dot.addEventListener('click', function() {
+            const index = parseInt(this.getAttribute('data-index'));
+            showTestimonial(index);
+        });
+    });
+    
+    // Auto-rotate testimonials
+    setInterval(() => {
+        currentTestimonial = (currentTestimonial + 1) % testimonials.length;
+        showTestimonial(currentTestimonial);
+    }, 5000);
+    
+    // Animate stats counting
+    const statNumbers = document.querySelectorAll('.stat-number');
+    
+    function animateStats() {
+        statNumbers.forEach(stat => {
+            const target = parseInt(stat.getAttribute('data-count'));
+            const duration = 2000;
+            const start = 0;
+            const increment = target / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                stat.textContent = Math.floor(current);
+                
+                if (current >= target) {
+                    stat.textContent = target;
+                    clearInterval(timer);
+                }
+            }, 16);
+        });
+    }
+    
+    // Show stats when hero section is in view
+    const heroSection = document.querySelector('.hero');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateStats();
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.5 });
+    
+    observer.observe(heroSection);
+    
+    // Back to top button
+    const backToTop = document.querySelector('.back-to-top');
+    
+    window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 300) {
+            backToTop.classList.add('visible');
+        } else {
+            backToTop.classList.remove('visible');
+        }
+    });
+    
+    backToTop.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+    
+    // Mobile menu toggle
+    const menuToggle = document.createElement('div');
+    menuToggle.classList.add('menu-toggle');
+    menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+    document.querySelector('header').appendChild(menuToggle);
+    
+    const nav = document.querySelector('nav ul');
+    
+    menuToggle.addEventListener('click', () => {
+        nav.classList.toggle('active');
+        menuToggle.innerHTML = nav.classList.contains('active') ? 
+            '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+    });
+    
+    // Close menu when clicking a link
+    document.querySelectorAll('nav a').forEach(link => {
+        link.addEventListener('click', () => {
+            nav.classList.remove('active');
+            menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+        });
+    });
+});
+    </script>
 </body>
 </html>
